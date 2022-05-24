@@ -2,7 +2,7 @@ import './App.css';
 import Response from "./Response.js"
 import {initializeApp} from "firebase/app"
 import { getFirestore, collection, addDoc, doc, getDocs, updateDoc, increment } from "firebase/firestore";
-import {useState, useEffect, useRef, useCallback} from "react"
+import {useState, useEffect, useRef} from "react"
 
 function App() {
 
@@ -22,9 +22,8 @@ function App() {
   const textFieldRef = useRef(null);
   const [responses, setResponses] = useState([])
 
-  // Get all previous responses
-  // useCallback needed bc it is called in useEffect
-  const loadResponses = useCallback(() => {
+  // Get previous responses on page load
+  useEffect(() => {
     const responses = []
     getDocs(collection(db, "responses"))  // get the collection
     .then((allResponses) => {  // format each response into an array as we want it
@@ -33,11 +32,6 @@ function App() {
       setResponses(responses)
     })
   }, [db])
-
-  // Get responses on page load
-  useEffect(() => {
-    loadResponses()
-  }, [loadResponses])
 
   // upvote a previous response 
   const upvote = (responseID) => {
@@ -71,7 +65,9 @@ function App() {
     .then((docRef) => {
       setResponses([...responses, {id: docRef.id, ...newResponse}])  // update the state variable
     })
-    .catch((e) => console.error(e))    
+    .catch((e) => console.error(e))
+
+    textFieldRef.current.value = "" // clear the text field
   }
 
   return (
