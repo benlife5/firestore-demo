@@ -1,4 +1,3 @@
-
 function Response(props) {
   return (
     <div className="response">
